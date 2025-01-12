@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+
+export CFLAGS+=-Wall -g -fomit-frame-pointer
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+ifneq ($(DEB_HOST_ARCH_OS),linux)
+EXTRA_CONFIG_FLAGS=--with-alsa=no
+endif
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	dh_auto_configure -- --with-pic $(EXTRA_CONFIG_FLAGS) --libdir=/usr/lib
+
+override_dh_autoreconf:
+	dh_autoreconf -- ./autogen.sh

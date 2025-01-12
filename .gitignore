@@ -29,6 +29,13 @@ config.rpath
 config.status
 config.sub
 configure
+debian/.debhelper/
+debian/amsynth.debhelper.log
+debian/amsynth.substvars
+debian/autoreconf.after
+debian/autoreconf.before
+debian/debhelper-build-stamp
+debian/files
 Debug/
 depcomp
 INSTALL

@@ -1,0 +1,64 @@
+Source: amsynth
+Section: sound
+Priority: optional
+Maintainer: Nick Dowell <nick@nickdowell.com>
+Uploaders:
+ Nick Dowell <nick@nickdowell.com>
+Build-Depends:
+ autopoint,
+ debhelper-compat (=13),
+ dssi-dev,
+ intltool,
+ libasound2-dev [linux-any],
+ libcurl4-openssl-dev,
+ libjack-jackd2-dev | libjack-dev,
+ liblo-dev,
+ libxcursor-dev,
+ libxinerama-dev,
+ libxrandr-dev,
+ pandoc,
+ zlib1g-dev
+Standards-Version: 4.6.2
+Homepage: https://amsynth.github.io
+Vcs-Git: https://github.com/amsynth/amsynth.git
+Vcs-Browser: https://github.com/amsynth/amsynth
+Rules-Requires-Root: no
+
+Package: amsynth
+Architecture: any
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends}
+Provides:
+ dssi-plugin,
+ lv2-plugin,
+ vst-plugin,
+Description: two oscillator software synthesizer
+ amsynth features:
+    * two analogue-style audio oscillators, featuring:
+          o sine wave
+          o saw/triangle wave with adjustable shape
+          o square/pulse wave with adjustable pulsewidth
+          o noise generation
+          o "random" wave (noise with sample & hold)
+          o oscillator sync
+          o detune and range control
+    * mixer section with ring modulation
+    * analogue-style filter
+          o switchable low-pass / high-pass / band-pass / notch
+          o switchable 12 or 24dB/octave curve
+          o dedicated ADSR envelope
+          o cutoff and resonance control
+          o keyboard pitch tracking
+    * amplifier with dedicated ADSR envelope
+    * modulation LFO
+          o up to 58Hz modulation
+          o routable to all sections (pitch, filter, amplifier)
+    * Effects
+          o High quality stereo reverb (freeverb)
+          o Distortion/crunch
+    * Easy navigation and manipulation of presets
+    * Stand-alone application using JACK, ALSA or OSS
+    * DSSI plug-in
+    * LV2 plug-in
+    * VST plug-in
