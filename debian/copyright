@@ -4,27 +4,64 @@ Upstream-Contact: Nick Dowell <nick@nickdowell.com>
 Source: https://github.com/amsynth/amsynth/releases
 
 Files: *
-Copyright:
- 2001-2025, Nick Dowell <nick@nickdowell.com>
- 2003 Darrick Servis
+Copyright: 2001-2025, Nick Dowell <nick@nickdowell.com>
 License: GPL-2+
 
 Files: debian/*
 Copyright:
- 2025-2025, Nick Dowell <nick@nickdowell.com>
+ 2025, Nick Dowell <nick@nickdowell.com>
  2020-2023, Dennis Braun <snd@debian.org>
  2009-2012, Alessio Treglia <alessio@debian.org>
  2002-2009, Free Ekanayaka <free@centrotemporeale.it>
 License: GPL-2+
 
+Files: external/ardour/vestige.h
+Copyright: 2006, Javier Serrano Polo <jasp00/at/users.sourceforge.net>
+License: GPL-2+
+
+Files: external/freeverb/*
+License: public-domain
+ This code is public domain
+
+Files: external/MTS-ESP/*
+Copyright: 2021, ODDSound Ltd. <info@oddsound.com>
+License: 0BSD
+
+Files: external/JUCE/modules/juce_audio_processors/format_types/LV2_SDK/lv2/*
+Copyright: 2006-2012, Steve Harris, David Robillard
+License: ISC
+
+Files:
+ external/JUCE/juce_core/*
+ external/JUCE/juce_events/*
+Copyright: 2022, Raw Material Software Limited
+License: ISC
+
+Files:
+ external/JUCE/juce_data_structures/*
+ external/JUCE/juce_graphics/*
+ external/JUCE/juce_gui_basics/*
+Copyright: 2022, Raw Material Software Limited
+License: GPL-3+
+
 Files: external/nsm/nsm.h
 Copyright: 2012, Jonathan Moore Liles
 License: ISC
+
+Files: external/seq24/controllers.h
+License: GPL-2+
+
+Files: src/standalone/drivers/ALSAmmapAudioDriver.*
+Copyright:
+ 2001-2023, Nick Dowell <nick@nickdowell.com>
+ 2002, Karsten Wiese
+License: GPL-2+
+
+License: 0BSD
  Permission to use, copy, modify, and/or distribute this software for any
- purpose with or without fee is hereby granted, provided that the above
- copyright notice and this permission notice appear in all copies.
- .
- THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ purpose with or without fee is hereby granted.
+
+ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
@@ -48,3 +85,16 @@ Comment:
  .
  On Debian systems, the complete text of the GNU General
  Public License can be found in `/usr/share/common-licenses/GPL-2'.
+
+License: ISC
+ Permission to use, copy, modify, and/or distribute this software for any
+ purpose with or without fee is hereby granted, provided that the above
+ copyright notice and this permission notice appear in all copies.
+ .
+ THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.

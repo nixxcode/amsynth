@@ -1,7 +1,8 @@
 /*
  *  ALSAmmapAudioDriver.h
  *
- *  Copyright (c) 2001-2012 Nick Dowell, Karsten Wiese
+ *  Copyright (c) 2001-2023 Nick Dowell
+ *  Copyright (c) 2002, Karsten Wiese
  *
  *  This file is part of amsynth.
  *
