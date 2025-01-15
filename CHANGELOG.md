@@ -5,8 +5,7 @@
   - Added preset selection, saving, and main menu to plug-ins GUIs.
   - The lv2-dev package is no longer required; JUCE bundles the LV2 headers.
   - Added support for [MTS-ESP](https://github.com/ODDSound/MTS-ESP) microtuning,
-    excluding multi-channel tuning tables. MTS-ESP is not GPL licensed so some
-    packagers may wish to disable it by configuring `--without-mts-esp`.
+    excluding multi-channel tuning tables.
   - Removed support for JACK-Session, which is deprecated and unsupported.
   - Fixed a memory leak in VST effGetChunk handler.
   - Fixed unintentional distortion on some presets - issue #235
