@@ -82,6 +82,7 @@ MidiController::HandleMidiData(const unsigned char* bytes, unsigned numBytes)
 				data = byte;
 				break;
 			}
+			if (_handler) _handler->HandleMidiPressure(data, byte / 127.f);
 			data = 0xff;
 			break;
 
@@ -103,6 +104,7 @@ MidiController::HandleMidiData(const unsigned char* bytes, unsigned numBytes)
 			break;
 	
 		case MIDI_STATUS_CHANNEL_PRESSURE:
+			if (_handler) _handler->HandleMidiPressure(-1, byte / 127.f);
 			data = 0xff;
 			break;
 	

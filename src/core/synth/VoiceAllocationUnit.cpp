@@ -271,6 +271,18 @@ VoiceAllocationUnit::HandleMidiPitchWheelSensitivity(uchar semitones)
 }
 
 void
+VoiceAllocationUnit::HandleMidiPressure(int note, float pressure)
+{
+	if (note == -1) {
+		for (auto voice : _voices)
+			voice->setVelocity(pressure);
+	}
+	else {
+		_voices[note]->setVelocity(pressure);
+	}
+}
+
+void
 VoiceAllocationUnit::HandleMidiAllSoundOff()
 {
 	resetAllVoices();

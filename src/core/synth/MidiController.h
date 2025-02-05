@@ -38,6 +38,7 @@ public:
 	virtual void HandleMidiNoteOff(int /*note*/, float /*velocity*/) = 0;
 	virtual void HandleMidiPitchWheel(float /*value*/) = 0;
 	virtual void HandleMidiPitchWheelSensitivity(uchar semitones) = 0;
+	virtual void HandleMidiPressure(int /*note*/, float /*pressure*/) = 0;
 	virtual void HandleMidiAllSoundOff() = 0;
 	virtual void HandleMidiAllNotesOff() = 0;
 	virtual void HandleMidiSustainPedal(uchar /*value*/) = 0;
