@@ -31,6 +31,7 @@
 #include "lv2/worker/worker.h"
 
 #define AMSYNTH_LV2_URI             "http://code.google.com/p/amsynth/amsynth"
+#define AMSYNTH_LV2UI_URI           "http://code.google.com/p/amsynth/amsynth/ui"
 
 #define FOR_EACH_PROPERTY(X) \
 	X(max_polyphony) \
