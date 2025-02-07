@@ -20,6 +20,7 @@
     a ui:X11UI ;
     lv2:binary <amsynth_lv2ui.so> ;
     lv2:optionalFeature ui:noUserResize ;
+    lv2:optionalFeature ui:touch ;
     lv2:requiredFeature ui:idleInterface ;
     lv2:extensionData ui:idleInterface .
 
