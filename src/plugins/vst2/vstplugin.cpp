@@ -76,12 +76,24 @@ struct Plugin final : public Parameter::Observer
 		free(midiBuffer);
 	}
 
-	void parameterDidChange(const Parameter &parameter)
+	void parameterDidChange(const Parameter &parameter) override
 	{
 		if (audioMaster &&
 			audioMasterValues.at(parameter.getId()) != parameter.getNormalisedValue())
 			audioMaster(effect, audioMasterAutomate, parameter.getId(), 0, nullptr,
 						audioMasterValues[parameter.getId()] = parameter.getNormalisedValue());
+	}
+
+	void parameterBeginEdit(const Parameter &parameter) override
+	{
+		if (audioMaster)
+			audioMaster(effect, audioMasterBeginEdit, parameter.getId(), 0, nullptr, 0);
+	}
+
+	void parameterEndEdit(const Parameter &parameter) override
+	{
+		if (audioMaster)
+			audioMaster(effect, audioMasterEndEdit, parameter.getId(), 0, nullptr, 0);
 	}
 
 	AEffect *effect;
