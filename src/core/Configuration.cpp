@@ -106,7 +106,7 @@ Configuration::load	()
 			current_tuning_file = buffer;
 		} else if (buffer == "ignored_parameters") {
 			file >> buffer;
-			ignored_parameters = buffer;
+			locked_parameters = buffer;
 		} else if (buffer == "jack_autoconnect") {
 			file >> buffer;
 			jack_autoconnect = (buffer == "true");
@@ -133,7 +133,7 @@ Configuration::save	()
 	fprintf (fout, "polyphony\t%d\n", polyphony);
 	fprintf (fout, "pitch_bend_range\t%d\n", pitch_bend_range);
 	fprintf (fout, "tuning_file\t%s\n", current_tuning_file.c_str());
-	fprintf (fout, "ignored_parameters\t%s\n", ignored_parameters.c_str());
+	fprintf (fout, "ignored_parameters\t%s\n", locked_parameters.c_str());
 	fprintf (fout, "jack_autoconnect\t%s\n", jack_autoconnect ? "true" : "false");
 	fclose (fout);
 	return 0;

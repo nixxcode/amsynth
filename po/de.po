@@ -200,9 +200,9 @@ msgstr "Keiner"
 msgid "Assign MIDI CC"
 msgstr "MIDI-Controller"
 
-#: ../src/core/gui/ControlPanel.cpp:143
-msgid "Ignore Preset Value"
-msgstr "Preset-Wert ignorieren"
+#: ../src/core/gui/ControlPanel.cpp:146
+msgid "Lock Parameter"
+msgstr "Locken Parameter"
 
 #: ../src/core/gui/MainComponent.cpp:90
 msgid "Menu"

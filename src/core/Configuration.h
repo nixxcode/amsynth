@@ -117,7 +117,7 @@ public:
 	/**
 	 * A list of parameter names (separated by spaces) that will be ignored when loading presets.
 	 */
-	std::string ignored_parameters;
+	std::string locked_parameters;
 	
 	bool jack_autoconnect;
 

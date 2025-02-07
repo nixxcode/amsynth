@@ -142,11 +142,11 @@ struct ControlPanel::Impl final : juce::MouseListener
 			menu.addSubMenu(GETTEXT("Assign MIDI CC"), ccSubmenu, true, nullptr, cc != -1);
 		}
 
-		bool isIgnored = Preset::shouldIgnoreParameter(paramId);
-		menu.addItem(GETTEXT("Ignore Preset Value"), true, isIgnored, [isIgnored, paramId] {
-			Preset::setShouldIgnoreParameter(paramId, !isIgnored);
+		bool isLocked = Preset::isParameterLocked(paramId);
+		menu.addItem(GETTEXT("Lock Parameter"), true, isLocked, [isLocked, paramId] {
+			Preset::setParameterLocked(paramId, !isLocked);
 			Configuration &config = Configuration::get();
-			config.ignored_parameters = Preset::getIgnoredParameterNames();
+			config.locked_parameters = Preset::getLockedParameterNames();
 			config.save();
 		});
 		menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(control));

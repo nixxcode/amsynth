@@ -49,7 +49,7 @@ Preset&
 Preset::operator =		(const Preset &rhs)
 {
     for (int i = 0; i < kAmsynthParameterCount; i++) {
-		if (shouldIgnoreParameter(i))
+		if (isParameterLocked(i))
 			continue;
 		getParameter(i).setValue(rhs.getParameter(i).getValue());
     }
@@ -61,7 +61,7 @@ bool
 Preset::isEqual(const Preset &rhs)
 {
 	for (int i = 0; i < kAmsynthParameterCount; i++) {
-		if (shouldIgnoreParameter(i))
+		if (isParameterLocked(i))
 			continue;
 		if (getParameter(i).getNormalisedValue() != rhs.getParameter(i).getNormalisedValue())
 			return false;
@@ -151,23 +151,23 @@ Preset::fromString(const std::string &str)
 	return true;
 }
 
-static std::array<bool, kAmsynthParameterCount> s_ignoreParameter {false};
+static std::array<bool, kAmsynthParameterCount> lockedParameters {};
 
-bool Preset::shouldIgnoreParameter(int parameter)
+bool Preset::isParameterLocked(int parameter)
 {
-	return s_ignoreParameter.at(parameter);
+	return lockedParameters.at(parameter);
 }
 
-void Preset::setShouldIgnoreParameter(int parameter, bool ignore)
+void Preset::setParameterLocked(int parameter, bool locked)
 {
-	s_ignoreParameter.at(parameter) = ignore;
+	lockedParameters.at(parameter) = locked;
 }
 
-std::string Preset::getIgnoredParameterNames()
+std::string Preset::getLockedParameterNames()
 {
 	std::string names;
 	for (int i = 0; i < kAmsynthParameterCount; i++) {
-		if (shouldIgnoreParameter(i)) {
+		if (isParameterLocked(i)) {
 			if (!names.empty())
 				names += " ";
 			names += std::string(parameter_name_from_index(i));
@@ -176,10 +176,10 @@ std::string Preset::getIgnoredParameterNames()
 	return names;
 }
 
-void Preset::setIgnoredParameterNames(std::string names)
+void Preset::setLockedParameterNames(std::string names)
 {
 	for (int i = 0; i < kAmsynthParameterCount; i++) {
-		setShouldIgnoreParameter(i, false);
+		setParameterLocked(i, false);
 	}
 
 	std::stringstream ss(names);
@@ -191,7 +191,7 @@ void Preset::setIgnoredParameterNames(std::string names)
 	for (name_it = vstrings.begin(); name_it != vstrings.end(); ++name_it) {
 		int index = parameter_index_from_name(name_it->c_str());
 		if (index != -1) {
-			setShouldIgnoreParameter(index, true);
+			setParameterLocked(index, true);
 		}
 	}
 }

@@ -228,7 +228,7 @@ MidiController::clearControllerMap()
 	_param_to_cc_map[kAmsynthParameter_AmpEnvDecay]      = MIDI_CC_SOUND_CONTROLLER_6;
 	_param_to_cc_map[kAmsynthParameter_ReverbWet]        = MIDI_CC_EFFECTS_1_DEPTH;
 
-	for (size_t i = 0; i < kAmsynthParameterCount; i++)
+	for (int i = 0; i < kAmsynthParameterCount; i++)
 		if (_param_to_cc_map[i] != -1)
 			_cc_to_param_map[_param_to_cc_map[i]] = i;
 }

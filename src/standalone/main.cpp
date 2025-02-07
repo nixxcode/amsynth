@@ -400,7 +400,7 @@ int main( int argc, char *argv[] )
 	// errors now detected & reported in the GUI
 	out->init();
 
-	Preset::setIgnoredParameterNames(config.ignored_parameters);
+	Preset::setLockedParameterNames(config.locked_parameters);
 
 	s_synthesizer = new Synthesizer();
 	s_synthesizer->setSampleRate(config.sample_rate);

@@ -168,9 +168,9 @@ TEST(testPresetIgnoredParameters) {
     Preset newPreset = basePreset;
     newPreset.getParameter(0).setValue(0);
     assert(!basePreset.isEqual(newPreset));
-    Preset::setIgnoredParameterNames("amp_attack amp_decay");
+    Preset::setLockedParameterNames("amp_attack amp_decay");
     assert(basePreset.isEqual(newPreset));
-    Preset::setIgnoredParameterNames("");
+    Preset::setLockedParameterNames("");
     assert(!basePreset.isEqual(newPreset));
 }
 

@@ -54,11 +54,11 @@ public:
     void			toString		(std::stringstream &);
     bool			fromString		(const std::string &str);
 
-	static bool 	shouldIgnoreParameter(int parameter);
-	static void 	setShouldIgnoreParameter(int parameter, bool ignore);
+	static bool 	isParameterLocked(int parameter);
+	static void 	setParameterLocked(int parameter, bool ignore);
 
-	static std::string getIgnoredParameterNames();
-	static void setIgnoredParameterNames(std::string);
+	static std::string getLockedParameterNames();
+	static void setLockedParameterNames(std::string);
 
 private:
     std::string				mName;
