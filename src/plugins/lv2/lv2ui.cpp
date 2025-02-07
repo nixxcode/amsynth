@@ -36,8 +36,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 struct ParameterListener final : public Parameter::Observer {
-	ParameterListener(PresetController *presetController, std::function<void(int, float)> writeFunc)
-	: presetController(presetController), writeFunc(std::move(writeFunc)) {
+	ParameterListener(PresetController *presetController, std::function<void(int, float)> &&writeFn, std::function<void(int, bool)> &&touchFn)
+	: presetController(presetController), writeFunc(std::move(writeFn)), touchFunc(std::move(touchFn)) {
 		presetController->getCurrentPreset().addObserver(this);
 		active = true;
 	}
@@ -49,8 +49,7 @@ struct ParameterListener final : public Parameter::Observer {
 	}
 
 	void parameterDidChange(const Parameter &parameter) final {
-		if (!active) return;
-		writeFunc(parameter.getId(), parameter.getValue());
+		if (active) writeFunc(parameter.getId(), parameter.getValue());
 	}
 
 	void parameterBeginEdit(const Parameter &parameter) final {
@@ -78,7 +77,6 @@ struct lv2_ui {
 
 	LV2_Atom_Forge forge;
 	LV2_URID_Map *map;
-	LV2UI_Touch *touch {nullptr};
 	LV2UI_Write_Function _write_function;
 	LV2UI_Controller _controller;
 
@@ -175,6 +173,7 @@ lv2_ui_instantiate(const LV2UI_Descriptor*         /*descriptor*/,
 	lv2_ui *ui = new lv2_ui();
 
 	LV2UI_Resize *resize {nullptr};
+	LV2UI_Touch *touch {nullptr};
 
 	for (auto f = features; *f; f++) {
 		if (!strcmp((*f)->URI, LV2_UI__parent))
@@ -182,7 +181,7 @@ lv2_ui_instantiate(const LV2UI_Descriptor*         /*descriptor*/,
 		if (!strcmp((*f)->URI, LV2_URID__map))
 			ui->map = reinterpret_cast<LV2_URID_Map *>((*f)->data);
 		if (!strcmp((*f)->URI, LV2_UI__touch))
-			ui->touch = reinterpret_cast<LV2UI_Touch *>((*f)->data);
+			touch = reinterpret_cast<LV2UI_Touch *>((*f)->data);
 		if (!strcmp((*f)->URI, LV2_UI__resize))
 			resize = reinterpret_cast<LV2UI_Resize *>((*f)->data);
 	}
@@ -214,12 +213,9 @@ lv2_ui_instantiate(const LV2UI_Descriptor*         /*descriptor*/,
 
 	ui->parameterListener = std::make_unique<ParameterListener>(&ui->presetController, [=] (int idx, float value) {
 		write_function(controller, PORT_FIRST_PARAMETER + idx, sizeof(float), 0, &value);
+	}, [touch] (int idx, bool grabbed) {
+		if (touch) touch->touch(touch->handle, PORT_FIRST_PARAMETER + idx, grabbed);
 	});
-
-	ui->parameterListener->touchFunc = [=](int idx, bool grabbed) {
-		if (!ui->touch) return;
-		(*ui->touch->touch)(ui->touch->handle, PORT_FIRST_PARAMETER + idx, grabbed);
-	};
 
 	ui->mainComponent = std::make_unique<MainComponent>(&ui->presetController);
 	ui->mainComponent->sendProperty = [ui] (const char *name, const char *value) {lv2helper(ui).send(name, value);};
