@@ -73,22 +73,14 @@ struct lv2_ui {
 	JuceIntegration juceIntegration;
 	std::unique_ptr<MainComponent> mainComponent;
 	std::unique_ptr<ParameterListener> parameterListener;
-	LV2UI_Widget parent {nullptr};
 
 	LV2_Atom_Forge forge;
-	LV2_URID_Map *map;
 	LV2UI_Write_Function _write_function;
 	LV2UI_Controller _controller;
 
 	struct {
-		LV2_URID atom_Float;
-		LV2_URID atom_Path;
-		LV2_URID atom_Resource;
-		LV2_URID atom_Sequence;
 		LV2_URID atom_String;
-		LV2_URID atom_URID;
 		LV2_URID atom_eventTransfer;
-		LV2_URID midi_Event;
 		LV2_URID patch_Get;
 		LV2_URID patch_Set;
 		LV2_URID patch_property;
@@ -170,46 +162,39 @@ lv2_ui_instantiate(const LV2UI_Descriptor*         /*descriptor*/,
 				   LV2UI_Widget*                   widget,
 				   const LV2_Feature* const*       features)
 {
-	lv2_ui *ui = new lv2_ui();
-
+	LV2_URID_Map *map {nullptr};
 	LV2UI_Resize *resize {nullptr};
 	LV2UI_Touch *touch {nullptr};
+	LV2UI_Widget parent {nullptr};
 
 	for (auto f = features; *f; f++) {
 		if (!strcmp((*f)->URI, LV2_UI__parent))
-			ui->parent = reinterpret_cast<LV2UI_Widget>((*f)->data);
+			parent = reinterpret_cast<LV2UI_Widget>((*f)->data);
 		if (!strcmp((*f)->URI, LV2_URID__map))
-			ui->map = reinterpret_cast<LV2_URID_Map *>((*f)->data);
+			map = reinterpret_cast<LV2_URID_Map *>((*f)->data);
 		if (!strcmp((*f)->URI, LV2_UI__touch))
 			touch = reinterpret_cast<LV2UI_Touch *>((*f)->data);
 		if (!strcmp((*f)->URI, LV2_UI__resize))
 			resize = reinterpret_cast<LV2UI_Resize *>((*f)->data);
 	}
 
-	if (!ui->map) {
-		delete ui;
+	if (!map)
 		return nullptr;
-	}
 
-	ui->uris.atom_Float         = ui->map->map(ui->map->handle, LV2_ATOM__Float);
-	ui->uris.atom_Path          = ui->map->map(ui->map->handle, LV2_ATOM__Path);
-	ui->uris.atom_Resource      = ui->map->map(ui->map->handle, LV2_ATOM__Resource);
-	ui->uris.atom_Sequence      = ui->map->map(ui->map->handle, LV2_ATOM__Sequence);
-	ui->uris.atom_String        = ui->map->map(ui->map->handle, LV2_ATOM__String);
-	ui->uris.atom_URID          = ui->map->map(ui->map->handle, LV2_ATOM__URID);
-	ui->uris.atom_eventTransfer = ui->map->map(ui->map->handle, LV2_ATOM__eventTransfer);
-	ui->uris.midi_Event         = ui->map->map(ui->map->handle, LV2_MIDI__MidiEvent);
-	ui->uris.patch_Get          = ui->map->map(ui->map->handle, LV2_PATCH__Get);
-	ui->uris.patch_Set          = ui->map->map(ui->map->handle, LV2_PATCH__Set);
-	ui->uris.patch_property     = ui->map->map(ui->map->handle, LV2_PATCH__property);
-	ui->uris.patch_value        = ui->map->map(ui->map->handle, LV2_PATCH__value);
-#define MAP_URID(Name) ui->uris.amsynth_##Name = ui->map->map(ui->map->handle, AMSYNTH_LV2_URI "#" #Name);
+	lv2_ui *ui = new lv2_ui();
+	ui->uris.atom_String        = map->map(map->handle, LV2_ATOM__String);
+	ui->uris.atom_eventTransfer = map->map(map->handle, LV2_ATOM__eventTransfer);
+	ui->uris.patch_Get          = map->map(map->handle, LV2_PATCH__Get);
+	ui->uris.patch_Set          = map->map(map->handle, LV2_PATCH__Set);
+	ui->uris.patch_property     = map->map(map->handle, LV2_PATCH__property);
+	ui->uris.patch_value        = map->map(map->handle, LV2_PATCH__value);
+#define MAP_URID(Name) ui->uris.amsynth_##Name = map->map(map->handle, AMSYNTH_LV2_URI "#" #Name);
 	FOR_EACH_PROPERTY(MAP_URID)
 
 	ui->_write_function = write_function;
 	ui->_controller = controller;
 
-	lv2_atom_forge_init(&ui->forge, ui->map);
+	lv2_atom_forge_init(&ui->forge, map);
 
 	ui->parameterListener = std::make_unique<ParameterListener>(&ui->presetController, [=] (int idx, float value) {
 		write_function(controller, PORT_FIRST_PARAMETER + idx, sizeof(float), 0, &value);
@@ -219,7 +204,7 @@ lv2_ui_instantiate(const LV2UI_Descriptor*         /*descriptor*/,
 
 	ui->mainComponent = std::make_unique<MainComponent>(&ui->presetController);
 	ui->mainComponent->sendProperty = [ui] (const char *name, const char *value) {lv2helper(ui).send(name, value);};
-	ui->mainComponent->addToDesktop(juce::ComponentPeer::windowIgnoresKeyPresses, ui->parent);
+	ui->mainComponent->addToDesktop(juce::ComponentPeer::windowIgnoresKeyPresses, parent);
 	ui->mainComponent->setVisible(true);
 	if (resize) {
 		auto bounds = ui->mainComponent->getScreenBounds();
