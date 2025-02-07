@@ -256,7 +256,9 @@ lv2_ui_port_event(LV2UI_Handle handle,
 			}
 		}
 	} else if (port_index >= PORT_FIRST_PARAMETER) {
+		ui->parameterListener->active = false;
 		ui->presetController.getCurrentPreset().getParameter(port_index - PORT_FIRST_PARAMETER).setValue(*(float *)buffer);
+		ui->parameterListener->active = true;
 	}
 }
 
