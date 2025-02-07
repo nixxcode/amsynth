@@ -102,7 +102,7 @@ PresetController::clearPreset		()
 }
 
 void
-PresetController::parameterWillChange(const Parameter &parameter)
+PresetController::parameterBeginEdit(const Parameter &parameter)
 {
 	undoBuffer.push(new ParamChange(parameter.getId(), parameter.getValue()));
 	clearRedoBuffer();

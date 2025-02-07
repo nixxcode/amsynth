@@ -59,8 +59,9 @@ public:
 
 private:
 	void leftMouseDown(const juce::MouseEvent &) override {
-		parameter.willChange();
+		parameter.beginEdit();
 		parameter.setNormalisedValue(parameter.getNormalisedValue() > 0.f ? 0.f : 1.f);
+		parameter.endEdit();
 	}
 };
 
@@ -90,6 +91,7 @@ public:
 private:
 	void mouseEnter(const juce::MouseEvent &event) override;
 	void mouseExit(const juce::MouseEvent &event) override;
+	void mouseUp(const juce::MouseEvent &event) override;
 	void leftMouseDown(const juce::MouseEvent &event) override;
 	void mouseDrag(const juce::MouseEvent &event) override;
 	void mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelDetails &wheel) override;
@@ -117,8 +119,9 @@ private:
 			auto isTicked = parameter.getValue() == value;
 			auto itemText = juce::String(juce::CharPointer_UTF8(strings[i]));
 			menu.addItem(itemText, true, isTicked, [&parameter = parameter, value] {
-				parameter.willChange();
+				parameter.beginEdit();
 				parameter.setValue(value);
+				parameter.endEdit();
 			});
 		}
 		menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(this));

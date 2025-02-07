@@ -96,10 +96,15 @@ void Knob::mouseEnter(const juce::MouseEvent &) { label_->show(this, getLabelTex
 
 void Knob::mouseExit(const juce::MouseEvent &) { label_->hide(); }
 
+void Knob::mouseUp(const juce::MouseEvent &event) {
+	if (event.mods.isLeftButtonDown())
+		parameter.endEdit();
+}
+
 void Knob::leftMouseDown(const juce::MouseEvent &event) {
 	referenceVal_ = parameter.getNormalisedValue();
 	referenceY_ = event.y;
-	parameter.willChange();
+	parameter.beginEdit();
 }
 
 void Knob::mouseDrag(const juce::MouseEvent &event) {
@@ -129,7 +134,6 @@ void Knob::mouseWheelMove(const juce::MouseEvent &event, const juce::MouseWheelD
 		return;
 	}
 	auto delta = (wheel.deltaY / 2.f / (event.mods.isCtrlDown() ? 4.f : 1.f) / (event.mods.isShiftDown() ? 4.f : 1.f));
-	parameter.willChange();
 	parameter.setNormalisedValue(parameter.getNormalisedValue() + delta);
 	label_->show(this, getLabelText());
 }

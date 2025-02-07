@@ -128,7 +128,7 @@ private:
 	long int 		lastPresetsFileModifiedTime = 0;
 
 	// Parameter::Observer
-	void parameterWillChange(const Parameter &) final;
+	void parameterBeginEdit(const Parameter &) final;
 
 	class ChangeData {
 		public:

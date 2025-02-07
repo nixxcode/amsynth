@@ -62,8 +62,9 @@ class Parameter {
 public:
 	class Observer {
 	public:
-		virtual void parameterWillChange(const Parameter &) {}
 		virtual void parameterDidChange(const Parameter &) {}
+		virtual void parameterBeginEdit(const Parameter &) {}
+		virtual void parameterEndEdit(const Parameter &) {}
 	protected:
 		~Observer() = default;
 	};
@@ -94,8 +95,8 @@ public:
 	void			addObserver			(Observer *observer);
 	void			removeObserver		(Observer *observer) { _observers.erase(observer); }
 
-	// The user is starting to change this parameter
-	void			willChange		() const { for (auto it : _observers) it->parameterWillChange(*this); }
+	void			beginEdit		() const { for (auto it : _observers) it->parameterBeginEdit(*this); }
+	void			endEdit			() const { for (auto it : _observers) it->parameterEndEdit(*this); }
 
 	float			getDefault		() const { return _spec.def; }
 

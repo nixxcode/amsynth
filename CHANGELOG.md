@@ -3,6 +3,7 @@
   - Ported the GUI from GTK2 to JUCE.
     PACKAGERS TAKE NOTE: build dependencies have changed!
   - Added preset selection, saving, and main menu to plug-ins GUIs.
+  - Added support for LV2 touch extension.
   - The lv2-dev package is no longer required; JUCE bundles the LV2 headers.
   - Added support for [MTS-ESP](https://github.com/ODDSound/MTS-ESP) microtuning,
     excluding multi-channel tuning tables.
