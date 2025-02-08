@@ -351,5 +351,5 @@ const char **parameter_get_value_strings(int param_index)
 		}
 	}
 
-	return &strings[0];
+	return strings.empty() ? nullptr : &strings[0];
 }
