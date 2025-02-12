@@ -8,21 +8,8 @@ jobs:
     strategy:
       matrix:
         include:
-          # - release: 20.04
-          #   cc: clang-10
-          #   cxx: clang-10
-          - release: 20.04
-            cc: gcc-9
-            cxx: g++-9
           - release: 22.04
-            cc: clang-14
-            cxx: clang++-14
-          - release: 22.04
-            cc: gcc-11
-            cxx: g++-11
-    env:
-      CC: ${{ matrix.cc }}
-      CXX: ${{ matrix.cxx }}
+          - release: 24.04
     steps:
     - uses: actions/checkout@v4
       with:
@@ -44,11 +31,11 @@ jobs:
         make -j 2 check
     - name: Run gcov
       run: gcov -lp $(find . -name '*.c' -o -name '*.cpp')
-      if: matrix.cc == 'gcc-11'
+      if: matrix.release == '22.04'
     - uses: codecov/codecov-action@v3
-      if: matrix.cc == 'gcc-11'
+      if: matrix.release == '22.04'
     - uses: actions/upload-artifact@v4
-      if: matrix.cc == 'gcc-11'
+      if: matrix.release == '22.04'
       with:
         name: amsynth-tarball-${{ github.sha }}
         path: amsynth-*.tar.gz
