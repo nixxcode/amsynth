@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>amsynth</title>
+    <welcome file="Welcome.rtf"/>
+    <allowed-os-versions>
+        <os-version min="10.13" />
+    </allowed-os-versions>
+
+    <pkg-ref id="com.nickdowell.amsynth.data"/>
+    <pkg-ref id="com.nickdowell.amsynth.au"/>
+    <pkg-ref id="com.nickdowell.amsynth.vst"/>
+
+    <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.nickdowell.amsynth.data"/>
+            <line choice="com.nickdowell.amsynth.au"/>
+            <line choice="com.nickdowell.amsynth.vst"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+
+    <choice id="com.nickdowell.amsynth.data" visible="false">
+        <pkg-ref id="com.nickdowell.amsynth.data"/>
+    </choice>
+    <pkg-ref id="com.nickdowell.amsynth.data" onConclusion="none">#data.pkg</pkg-ref>
+
+    <choice id="com.nickdowell.amsynth.au" visible="false">
+        <pkg-ref id="com.nickdowell.amsynth.au"/>
+    </choice>
+    <pkg-ref id="com.nickdowell.amsynth.au" onConclusion="none">#au.pkg</pkg-ref>
+
+    <choice id="com.nickdowell.amsynth.vst" visible="false">
+        <pkg-ref id="com.nickdowell.amsynth.vst"/>
+    </choice>
+    <pkg-ref id="com.nickdowell.amsynth.vst" onConclusion="none">#vst.pkg</pkg-ref>
+</installer-gui-script>

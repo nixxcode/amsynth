@@ -1,0 +1,22 @@
+name: Mac
+
+on:
+  push:
+    paths-ignore:
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/windows.yml'
+      - '.gitignore'
+      - 'win/**'
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+    - run: cd mac && ./build_release.sh
+    - uses: actions/upload-artifact@v4
+      with:
+        name: amsynth-macos-${{ github.sha }}
+        path: mac/amsynth-*.zip

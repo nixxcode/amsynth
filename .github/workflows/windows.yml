@@ -1,6 +1,12 @@
 name: Windows
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - '.github/workflows/linux.yml'
+      - '.github/workflows/mac.yml'
+      - '.gitignore'
+      - 'mac/**'
 
 jobs:
   build:

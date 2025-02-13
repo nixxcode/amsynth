@@ -1,0 +1,3 @@
+#!/bin/bash
+
+codesign --force --sign - /Library/Audio/Plug-Ins/VST/amsynth.vst

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+codesign --force --sign - /Library/Audio/Plug-Ins/Components/amsynth.component
+killall -9 AudioComponentRegistrar || true
