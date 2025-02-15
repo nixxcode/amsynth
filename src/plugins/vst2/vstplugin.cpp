@@ -127,11 +127,10 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 			return 0;
 
 		case effGetParamLabel:
-			plugin->synthesizer->getParameterLabel((Param)index, (char *)ptr, 32);
 			return 0;
 
 		case effGetParamDisplay:
-			plugin->synthesizer->getParameterDisplay((Param)index, (char *)ptr, 32);
+			parameter_get_display(index, plugin->synthesizer->_presetController->getCurrentPreset().getParameter(index).getValue(), (char *)ptr, 32);
 			return 0;
 
 		case effGetParamName:
