@@ -21,13 +21,9 @@
 
 #import "auplugin.h"
 
-#import "core/controls.h"
-#import "core/gettext.h"
 #import "core/gui/ControlPanel.h"
 #import "core/gui/MainComponent.h"
-#import "core/synth/MidiController.h"
 #import "core/synth/PresetController.h"
-#import "core/synth/Synthesizer.h"
 
 #import <AppKit/AppKit.h>
 #import <AudioUnit/AUCocoaUIView.h>
