@@ -12,6 +12,7 @@
   - Fixed unintentional distortion on some presets - issue #235
   - Fixed values passed to VST audioMasterAutomate.
   - Added Visual Studio project to allow building VST for Windows.
+  - Added Xcode project to allow building AudioUnit & VST for macOS.
 
 
 ## 1.13.4 (2024-05-02)
