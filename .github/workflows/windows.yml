@@ -7,6 +7,7 @@ on:
       - '.github/workflows/mac.yml'
       - '.gitignore'
       - 'mac/**'
+      - 'src/plugins/au/**'
 
 jobs:
   build:

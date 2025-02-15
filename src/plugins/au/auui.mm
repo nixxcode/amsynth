@@ -32,28 +32,78 @@
 @end
 
 struct ParameterListener final : Parameter::Observer {
-	ParameterListener(AudioUnit audioUnit, AUEventListenerRef audioUnitListener, PresetController *presetController)
-	: audioUnit_(audioUnit), audioUnitListener_(audioUnitListener), presetController_(presetController) {}
+	ParameterListener(AudioUnit audioUnit, PresetController *presetController)
+	: audioUnit_(audioUnit), presetController_(presetController)
+	{
+		AUListenerCreate(ParameterListener::AUParameterChanged, this, CFRunLoopGetMain(), kCFRunLoopCommonModes, 1.f / 60.f, &audioUnitListener_);
+
+		for (int i = 0; i < kAmsynthParameterCount; i++) {
+			AudioUnitParameter auParameter = {
+				.mAudioUnit = audioUnit_,
+				.mParameterID = (AudioUnitParameterID)i,
+				.mScope = kAudioUnitScope_Global,
+				.mElement = 0};
+			auto &parameter = presetController_->getCurrentPreset().getParameter(i);
+			AudioUnitParameterValue value = 0;
+			AudioUnitGetParameter(audioUnit_, i, kAudioUnitScope_Global, 0, &value);
+			parameter.setValue(value);
+			AUListenerAddParameter(audioUnitListener_, &parameter, &auParameter);
+		}
+
+		presetController_->getCurrentPreset().addObserver(this);
+	}
+
+	~ParameterListener()
+	{
+		AUListenerDispose(audioUnitListener_);
+	}
 
 	void parameterDidChange(const Parameter &param) final
 	{
-		const AudioUnitParameter auParameter = {
-			.mAudioUnit = audioUnit_,
-			.mParameterID = param.getId(),
-			.mScope = kAudioUnitScope_Global,
-			.mElement = 0};
+		if (ignore_) return;
+		const AudioUnitParameter auParameter = {audioUnit_, param.getId(), kAudioUnitScope_Global, 0};
 		AUParameterSet(audioUnitListener_, NULL, &auParameter, param.getValue(), 0);
+		notify(param, kAudioUnitEvent_ParameterValueChange);
 	}
 
-	static void AUParameterListener(void *inUserData __unused, void *inObject, const AudioUnitParameter *inParameter __unused, AudioUnitParameterValue inValue)
+	void parameterBeginEdit(const Parameter &param) final
+	{
+		notify(param, kAudioUnitEvent_BeginParameterChangeGesture);
+	}
+
+	void parameterEndEdit(const Parameter &param) final
+	{
+		notify(param, kAudioUnitEvent_EndParameterChangeGesture);
+	}
+
+	void notify(const Parameter &param, AudioUnitEventType eventType)
+	{
+		AudioUnitEvent auEvent;
+		auEvent.mArgument.mParameter.mAudioUnit = audioUnit_;
+		auEvent.mArgument.mParameter.mParameterID = param.getId();
+		auEvent.mArgument.mParameter.mScope = kAudioUnitScope_Global;
+		auEvent.mArgument.mParameter.mElement = 0;
+		auEvent.mEventType = eventType;
+		AUEventListenerNotify(audioUnitListener_, NULL, &auEvent);
+	}
+
+	static void AUParameterChanged(void *inUserData, void *inObject, const AudioUnitParameter *, AudioUnitParameterValue inValue)
 	{
 		assert(pthread_main_np());
-		reinterpret_cast<Parameter *>(inObject)->setValue(inValue);
+		reinterpret_cast<ParameterListener *>(inUserData)->auParameterChanged(*reinterpret_cast<Parameter *>(inObject), inValue);
+	}
+
+	void auParameterChanged(Parameter &param, float inValue)
+	{
+		ignore_ = true;
+		param.setValue(inValue);
+		ignore_ = false;
 	}
 
 	AudioUnit audioUnit_;
-	AUEventListenerRef audioUnitListener_;
 	PresetController *presetController_;
+	AUEventListenerRef audioUnitListener_ {nullptr};
+	bool ignore_ {false};
 };
 
 __attribute__((objc_direct_members))
@@ -62,7 +112,6 @@ __attribute__((objc_direct_members))
 
 @implementation AmsynthAUView {
 	AudioUnit _audioUnit;
-	AUEventListenerRef _listenerRef;
 	juce::ScopedJuceInitialiser_GUI libraryInitialiser;
 	MainComponent *_component;
 	std::unique_ptr<ParameterListener> _parameterListener;
@@ -92,35 +141,18 @@ __attribute__((objc_direct_members))
 			_component->propertyChanged([key UTF8String], [((__bridge NSDictionary *)properties)[key] UTF8String]);
 		CFRelease(properties);
 
+		_parameterListener = std::make_unique<ParameterListener>(audioUnit, &_presetController);
+
 		_component->addToDesktop(juce::ComponentPeer::windowIgnoresKeyPresses, self);
 		_component->setVisible(true);
 
 		[self setFrame:CGRectMake(0, 0, _component->getWidth(), _component->getHeight())];
-
-		AUListenerCreate(ParameterListener::AUParameterListener, self, CFRunLoopGetMain(), kCFRunLoopCommonModes, 1.f / 60.f, &_listenerRef);
-
-		for (int i = 0; i < kAmsynthParameterCount; i++) {
-			AudioUnitParameter auParameter = {
-				.mAudioUnit = _audioUnit,
-				.mParameterID = (AudioUnitParameterID)i,
-				.mScope = kAudioUnitScope_Global,
-				.mElement = 0};
-			auto &parameter = _presetController.getCurrentPreset().getParameter(i);
-			AudioUnitParameterValue value = 0;
-			AudioUnitGetParameter(_audioUnit, i, kAudioUnitScope_Global, 0, &value);
-			parameter.setValue(value);
-			AUListenerAddParameter(_listenerRef, &parameter, &auParameter);
-		}
-
-		_parameterListener = std::make_unique<ParameterListener>(audioUnit, _listenerRef, &_presetController);
-		_presetController.getCurrentPreset().addObserver(_parameterListener.get());
 	}
 	return self;
 }
 
 - (void)dealloc
 {
-	AUListenerDispose(_listenerRef);
 	_component->removeFromDesktop();
 	delete _component; // Ensure this is deleted before juce::ScopedJuceInitialiser_GUI
 	[super dealloc];
@@ -149,7 +181,7 @@ __attribute__((objc_direct_members))
 
 OSStatus GetCococaUI(AudioUnitCocoaViewInfo *info)
 {
-	info->mCocoaAUViewBundleLocation = (CFURLRef)[[NSBundle bundleForClass:[AmsynthAUCocoaUI class]] bundleURL];
+	info->mCocoaAUViewBundleLocation = (CFURLRef)CFBridgingRetain([[NSBundle bundleForClass:[AmsynthAUCocoaUI class]] bundleURL]);
 	info->mCocoaAUViewClass[0] = CFSTR("AmsynthAUCocoaUI");
 	return noErr;
 }

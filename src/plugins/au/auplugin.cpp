@@ -53,7 +53,7 @@ public:
 
 	bool StreamFormatWritable(AudioUnitScope scope, AudioUnitElement element) override { return true; }
 
-	ComponentResult Initialize() override
+	OSStatus Initialize() override
 	{
 		if (GetOutput(0)->GetStreamFormat().mChannelsPerFrame != 2) {
 			return kAudioUnitErr_FormatNotSupported;
@@ -85,28 +85,17 @@ public:
 		return status;
 	}
 
-	ComponentResult GetProperty(AudioUnitPropertyID inID, AudioUnitScope inScope, AudioUnitElement inElement,
-								void *outData) override
-	{
-		switch (inID) {
-			case kAudioUnitProperty_CocoaUI:
-				return GetCococaUI(reinterpret_cast<AudioUnitCocoaViewInfo *>(outData));
-
-			case kAudioUnitProperty_AmsynthProperties:
-				*reinterpret_cast<CFDictionaryRef *>(outData) = CreatePropertiesDictionary();
-				return noErr;
-
-			default:
-				return MusicDeviceBase::GetProperty(inID, inScope, inElement, outData);
-		}
-	}
-
-	ComponentResult GetPropertyInfo(AudioUnitPropertyID inID, AudioUnitScope inScope, AudioUnitElement inElement,
-									UInt32 &outDataSize, Boolean &outWritable) override
+	OSStatus GetPropertyInfo(AudioUnitPropertyID inID, AudioUnitScope inScope, AudioUnitElement inElement,
+							 UInt32 &outDataSize, Boolean &outWritable) override
 	{
 		switch (inID) {
 			case kAudioUnitProperty_CocoaUI:
 				outDataSize = sizeof(AudioUnitCocoaViewInfo);
+				outWritable = false;
+				return noErr;
+
+			case kAudioUnitProperty_ParameterStringFromValue:
+				outDataSize = sizeof(AudioUnitParameterStringFromValue);
 				outWritable = false;
 				return noErr;
 
@@ -117,6 +106,25 @@ public:
 
 			default:
 				return MusicDeviceBase::GetPropertyInfo(inID, inScope, inElement, outDataSize, outWritable);
+		}
+	}
+
+	OSStatus GetProperty(AudioUnitPropertyID inID, AudioUnitScope inScope, AudioUnitElement inElement,
+						 void *outData) override
+	{
+		switch (inID) {
+			case kAudioUnitProperty_CocoaUI:
+				return GetCococaUI(reinterpret_cast<AudioUnitCocoaViewInfo *>(outData));
+
+			case kAudioUnitProperty_ParameterStringFromValue:
+				return GetParameterValueString(reinterpret_cast<AudioUnitParameterStringFromValue *>(outData));
+
+			case kAudioUnitProperty_AmsynthProperties:
+				*reinterpret_cast<CFDictionaryRef *>(outData) = CreatePropertiesDictionary();
+				return noErr;
+
+			default:
+				return MusicDeviceBase::GetProperty(inID, inScope, inElement, outData);
 		}
 	}
 
@@ -158,6 +166,12 @@ public:
 			CFStringGetCString(keys[i], key, sizeof(key), kCFStringEncodingUTF8);
 			CFStringGetCString(values[i], value, sizeof(value), kCFStringEncodingUTF8);
 			_synth.setProperty(key, value);
+			if (!strcmp(key, PROP_NAME(preset_name))) {
+				CFStringRef name = CFStringCreateWithCString(kCFAllocatorDefault, value, kCFStringEncodingUTF8);
+				NewCustomPresetSet({-1, name});
+				PropertyChanged(kAudioUnitProperty_PresentPreset, kAudioUnitScope_Global, 0);
+				CFRelease(name);
+			}
 		}
 	}
 
@@ -172,21 +186,30 @@ public:
 
 		memset(&outParameterInfo, 0, sizeof(outParameterInfo));
 		outParameterInfo.cfNameString = CFStringCreateWithCString(0, parameter.getName(), kCFStringEncodingASCII);
-		outParameterInfo.unit = kAudioUnitParameterUnit_Generic;
+		outParameterInfo.unit = kAudioUnitParameterUnit_CustomUnit;
 		outParameterInfo.minValue = parameter.getMin();
 		outParameterInfo.maxValue = parameter.getMax();
 		outParameterInfo.defaultValue = parameter.getValue();
 		outParameterInfo.flags = kAudioUnitParameterFlag_HasCFNameString | kAudioUnitParameterFlag_CFNameRelease | kAudioUnitParameterFlag_IsReadable | kAudioUnitParameterFlag_IsWritable;
 
-		if (parameter.getSteps() == 2)
-			outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
-		else if (parameter.getLabel() == "s")
-			outParameterInfo.unit = kAudioUnitParameterUnit_Seconds;
-		else if (parameter.getLabel() == "Hz")
-			outParameterInfo.unit = kAudioUnitParameterUnit_Hertz;
+		char text[32] = "";
+		if (parameter_get_display(inParameterID, outParameterInfo.defaultValue, text, sizeof(text)))
+			outParameterInfo.flags |= kAudioUnitParameterFlag_HasName; // aka kAudioUnitParameterFlag_ValuesHaveStrings
+
 		if (parameter_get_value_strings(inParameterID))
 			outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
+		else if (outParameterInfo.minValue == 0.f && outParameterInfo.maxValue == 1.f)
+			outParameterInfo.unit = kAudioUnitParameterUnit_Generic;
 
+		return noErr;
+	}
+
+	OSStatus GetParameterValueString(AudioUnitParameterStringFromValue *info)
+	{
+		char text[32] = "";
+		if (!parameter_get_display(info->inParamID, *info->inValue, text, sizeof(text)))
+			return kAudioUnitErr_InvalidProperty;
+		info->outString = CFStringCreateWithCString(kCFAllocatorDefault, text, kCFStringEncodingUTF8);
 		return noErr;
 	}
 
