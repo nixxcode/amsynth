@@ -223,11 +223,11 @@ int parameter_get_display(int param_index, float value, char *buffer, size_t max
 		case kAmsynthParameter_LFOFreq:
 			return snprintf(buffer, maxlen, "%.1f Hz", cv);
 		case kAmsynthParameter_Oscillator2Detune:
-			return snprintf(buffer, maxlen, "%+.1f Cents", 1200.0 * log2(cv));
+			return snprintf(buffer, maxlen, "%+.1f cents", 1200.0 * log2(cv));
 		case kAmsynthParameter_Oscillator2Pitch:
-			return snprintf(buffer, maxlen, "%+.0f Semitone%s", cv, fabsf(cv) < 2 ? "" : "s");
+			return snprintf(buffer, maxlen, "%+.0f semitone%s", cv, fabsf(cv) < 2 ? "" : "s");
 		case kAmsynthParameter_Oscillator2Octave:
-			return snprintf(buffer, maxlen, "%+.0f Octave%s", value, fabsf(value) < 2 ? "" : "s");
+			return snprintf(buffer, maxlen, "%+.0f octave%s", value, fabsf(value) < 2 ? "" : "s");
 		case kAmsynthParameter_MasterVolume:
 			return snprintf(buffer, maxlen, "%+.1f dB", 20.0 * log10(cv));
 		case kAmsynthParameter_OscillatorMixRingMod:
@@ -265,6 +265,14 @@ int parameter_get_display(int param_index, float value, char *buffer, size_t max
 		case kAmsynthParameter_FilterSlope:
 		case kAmsynthParameter_LFOOscillatorSelect:
 		case kAmsynthParameter_PortamentoMode:
+			if (spec.min == 0.f) {
+				const char **strings = parameter_get_value_strings(param_index);
+				if (strings && value <= spec.max) {
+					return snprintf(buffer, maxlen, "%s", strings[(int)roundf(value)]);
+				} else if (spec.max == 1.f && spec.step == 1.f) {
+					return snprintf(buffer, maxlen, (int)roundf(normalised) ? "on" : "off");
+				}
+			}
 			return 0;
 		case kAmsynthParameterCount:
 		default:
