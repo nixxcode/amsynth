@@ -186,7 +186,7 @@ public:
 
 		memset(&outParameterInfo, 0, sizeof(outParameterInfo));
 		outParameterInfo.cfNameString = CFStringCreateWithCString(0, parameter.getName(), kCFStringEncodingASCII);
-		outParameterInfo.unit = kAudioUnitParameterUnit_CustomUnit;
+		outParameterInfo.unit = kAudioUnitParameterUnit_Generic;
 		outParameterInfo.minValue = parameter.getMin();
 		outParameterInfo.maxValue = parameter.getMax();
 		outParameterInfo.defaultValue = parameter.getValue();
@@ -198,8 +198,8 @@ public:
 
 		if (parameter_get_value_strings(inParameterID))
 			outParameterInfo.unit = kAudioUnitParameterUnit_Indexed;
-		else if (outParameterInfo.minValue == 0.f && outParameterInfo.maxValue == 1.f)
-			outParameterInfo.unit = kAudioUnitParameterUnit_Generic;
+		else if (parameter.getSteps() == 1)
+			outParameterInfo.unit = kAudioUnitParameterUnit_Boolean;
 
 		return noErr;
 	}
