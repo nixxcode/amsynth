@@ -285,8 +285,16 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 
 		case effGetTailSize:
 		case effIdle:
-		case effGetParameterProperties:
 			return 0;
+
+		case effGetParameterProperties: {
+			Parameter &parameter = plugin->synthesizer->_presetController->getCurrentPreset().getParameter(index);
+			_VstParameterProperties *properties = (_VstParameterProperties *)ptr;
+			memset(properties, 0, sizeof(*properties));
+			if (parameter.getSteps() == 1)
+				properties->flags |= kVstParameterIsSwitch;
+			return 1;
+		}
 
 		case effGetVstVersion:
 			return 2400;
