@@ -17,7 +17,6 @@ amsynth-tests
 amsynth-tests.log
 amsynth-tests.trs
 amsynth.desktop
-amsynth.VC.*
 autom4te.cache
 build
 compile
@@ -67,5 +66,6 @@ po/stamp-it
 stamp-h1
 test-driver
 test-suite.log
-win/*.vcxproj.user
+win/**/*.vcxproj.user
+win/**/x64/**
 xcuserdata
