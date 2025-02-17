@@ -36,8 +36,6 @@ public:
 
 	void paint(juce::Graphics &) final;
 
-	static std::string skinsDirectory;
-
 private:
 	struct Impl;
 	std::unique_ptr<Impl> impl_;

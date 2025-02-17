@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if defined _MSC_VER
+#ifdef _WIN32
 #include <direct.h>
 #endif
 
@@ -40,6 +40,9 @@ filesystem& filesystem::get()
 filesystem::filesystem()
 {
 #ifdef PKGDATADIR
+    factory_banks = std::string(PKGDATADIR "/banks");
+    skins = std::string(PKGDATADIR "/skins");
+
     const char *env_home = getenv("HOME");
     if (!env_home) {
         return;
@@ -85,6 +88,8 @@ filesystem::filesystem()
         std::cerr << "Error: could not create " << default_bank << std::endl;
     }
 #elif defined(__APPLE__)
+	factory_banks = "/Library/Application Support/amsynth/banks";
+	skins = "/Library/Application Support/amsynth/skins";
 	auto prefs = std::string(getenv("HOME")) + "/Library/Preferences/amsynth";
 	config = prefs + "/config";
 	controllers = prefs + "/controllers";
@@ -97,6 +102,9 @@ filesystem::filesystem()
 		std::ofstream(default_bank, std::ios::out) << "amSynth\nEOF\n";
 	}
 #elif defined(_WIN32)
+	auto data = std::string(getenv("ProgramData")) + "\\amsynth";
+	factory_banks = data + "\\banks";
+	skins = data + "\\skins";
 	auto prefs = std::string(getenv("APPDATA")) + "\\amsynth";
 	config = prefs + "\\config";
 	controllers = prefs + "\\controllers";

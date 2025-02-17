@@ -30,6 +30,11 @@ public:
 
     static filesystem& get();
 
+    // data
+    std::string factory_banks;
+    std::string skins;
+
+    // prefs
     std::string config;
     std::string controllers;
     std::string default_bank;

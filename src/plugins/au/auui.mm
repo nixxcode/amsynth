@@ -123,10 +123,6 @@ __attribute__((objc_direct_members))
 	if ((self = [super init])) {
 		_audioUnit = audioUnit;
 
-		if (ControlPanel::skinsDirectory.empty()) {
-			ControlPanel::skinsDirectory = [[[[NSBundle bundleForClass:[self class]] URLForResource:@"skins" withExtension:nil] path] UTF8String];
-		}
-
 		_component = new MainComponent(&_presetController);
 		_component->sendProperty = [audioUnit](const char *name, const char *value) {
 			auto props = @{@(name): @(value)};

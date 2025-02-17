@@ -468,27 +468,14 @@ static void scan_preset_banks(const std::string dir_path, bool read_only)
 		scan_preset_bank(dir_path, filename, read_only);
 }
 
-std::string sFactoryBanksDirectory;
-
 static void scan_preset_banks()
 {
 	s_banks.clear();
-	auto userBanksDirectory = PresetController::getUserBanksDirectory();
-	scan_preset_banks(userBanksDirectory, false);
-#ifdef PKGDATADIR
-	if (sFactoryBanksDirectory.empty())
-		sFactoryBanksDirectory = std::string(PKGDATADIR "/banks");
-#elif defined(__APPLE__)
-	if (sFactoryBanksDirectory.empty())
-		sFactoryBanksDirectory = "/Library/Application Support/amsynth/banks";
-#elif defined(_WIN32)
-	if (sFactoryBanksDirectory.empty())
-		sFactoryBanksDirectory = std::string(getenv("ProgramData")) + "\\amsynth\\banks";
-#endif
+	filesystem &fs = filesystem::get();
+	scan_preset_banks(fs.user_banks, false);
 	// sFactoryBanksDirectory == userBanksDirectory if the build is configured with a --prefix=$HOME/.local
-	if (!sFactoryBanksDirectory.empty() && sFactoryBanksDirectory != userBanksDirectory ) {
-		scan_preset_banks(sFactoryBanksDirectory, true);
-	}
+	if (fs.factory_banks != fs.user_banks)
+		scan_preset_banks(fs.factory_banks, true);
 }
 
 const std::vector<BankInfo> &
@@ -504,14 +491,9 @@ void PresetController::rescanPresetBanks()
 	scan_preset_banks();
 }
 
-std::string PresetController::getUserBanksDirectory()
-{
-	return filesystem::get().user_banks;
-}
-
 bool PresetController::createUserBank(const std::string &name)
 {
-	auto path = getUserBanksDirectory() + "/" + name + ".bank";
+	auto path = filesystem::get().user_banks + "/" + name + ".bank";
 	if (std::ifstream(path, std::ios::in).is_open())
 		return false;
 	auto file = std::ofstream(path, std::ios::out);

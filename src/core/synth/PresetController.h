@@ -107,8 +107,6 @@ public:
 	static const std::vector<BankInfo> & getPresetBanks();
 	static void rescanPresetBanks();
 
-    static std::string getUserBanksDirectory();
-
 	static bool createUserBank(const std::string &name);
 
 	void	notify				() {

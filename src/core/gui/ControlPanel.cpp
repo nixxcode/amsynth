@@ -28,6 +28,7 @@
 #include "Controls.h"
 #include "LayoutDescription.h"
 #include "core/Configuration.h"
+#include "core/filesystem.h"
 #include "core/synth/MidiController.h"
 #include "core/synth/PresetController.h"
 #include "seq24/controllers.h"
@@ -73,7 +74,7 @@ struct ControlPanel::Impl final : juce::MouseListener
 	, presetController_(presetController)
 	, label_(controlPanel)
 	{
-		skinDir_ = ControlPanel::skinsDirectory + "/default";
+		skinDir_ = filesystem::get().skins + "/default";
 		if (const char *path = getenv("AMSYNTH_SKIN"))
 			skinDir_ = path;
 		else
@@ -176,11 +177,3 @@ void ControlPanel::paint(juce::Graphics &g)
 		g.fillAll(juce::Colours::black);
 	}
 }
-
-#ifdef PKGDATADIR
-std::string ControlPanel::skinsDirectory {PKGDATADIR "/skins"};
-#elif JUCE_MAC
-std::string ControlPanel::skinsDirectory {"/Library/Application Support/amsynth/skins"};
-#elif JUCE_WINDOWS
-std::string ControlPanel::skinsDirectory = std::string(getenv("ProgramData")) + "\\amsynth\\skins";
-#endif
