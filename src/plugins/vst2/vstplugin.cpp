@@ -50,12 +50,6 @@
 
 #define MIDI_BUFFER_SIZE 4096
 
-static char hostProductString[64] = "";
-
-#if defined(DEBUG) && DEBUG
-static FILE *logFile;
-#endif
-
 struct Plugin final : public Parameter::Observer
 {
 	Plugin(AEffect *effect, audioMasterCallback master)
@@ -277,10 +271,6 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 				strcmp("receiveVstSysexEvent", (char *)ptr) == 0 ||
 				strcmp("sendVstMidiEvent", (char *)ptr) == 0 ||
 				false) return 0;
-#if defined(DEBUG) && DEBUG
-			fprintf(logFile, "[amsynth_vst] unhandled canDo: %s\n", (char *)ptr);
-			fflush(logFile);
-#endif
 			return 0;
 
 		case effGetTailSize:
@@ -308,10 +298,6 @@ static intptr_t dispatcher(AEffect *effect, int opcode, int index, intptr_t val,
 			return 0;
 
 		default:
-#if defined(DEBUG) && DEBUG
-			fprintf(logFile, "[amsynth_vst] unhandled VST opcode: %d\n", opcode);
-			fflush(logFile);
-#endif
 			return 0;
 	}
 }
@@ -358,14 +344,6 @@ __attribute__ ((visibility("default"))) AEffect * VSTPluginMain(audioMasterCallb
 
 AEffect * VSTPluginMain(audioMasterCallback audioMaster)
 {
-#if defined(DEBUG) && DEBUG
-	if (!logFile) {
-		logFile = fopen("/tmp/amsynth.log", "a");
-	}
-#endif
-	if (audioMaster) {
-		audioMaster(nullptr, audioMasterGetProductString, 0, 0, hostProductString, 0.0f);
-	}
 	AEffect *effect = (AEffect *)calloc(1, sizeof(AEffect));
 	effect->magic = kEffectMagic;
 	effect->dispatcher = dispatcher;
