@@ -85,6 +85,8 @@ public:
 		return status;
 	}
 
+	// MARK: AU properties
+
 	OSStatus GetPropertyInfo(AudioUnitPropertyID inID, AudioUnitScope inScope, AudioUnitElement inElement,
 							 UInt32 &outDataSize, Boolean &outWritable) override
 	{
@@ -141,6 +143,8 @@ public:
 		}
 	}
 
+	// MARK: amsynth properties
+
 	CFDictionaryRef CreatePropertiesDictionary()
 	{
 		auto props = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
@@ -174,6 +178,8 @@ public:
 			}
 		}
 	}
+
+	// MARK: AU Parameters
 
 	OSStatus GetParameterInfo(AudioUnitScope inScope, AudioUnitParameterID inParameterID,
 							  AudioUnitParameterInfo &outParameterInfo) override
@@ -240,6 +246,8 @@ public:
 		return MusicDeviceBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
 	}
 
+	// MARK: AU state
+
 	OSStatus SaveState(CFPropertyListRef *outData) override
 	{
 		OSStatus status = MusicDeviceBase::SaveState(outData);
@@ -271,6 +279,8 @@ public:
 		}
 		return noErr;
 	}
+
+	// MARK: AU audio & MIDI
 
 	OSStatus Render(AudioUnitRenderActionFlags &ioActionFlags, const AudioTimeStamp &inTimeStamp, UInt32 inNumberFrames) override
 	{
