@@ -821,36 +821,11 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		0167760B2D5768AF00DAC649 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0167761C2D57694900DAC649 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		016776252D576AE600DAC649 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		0167760E2D5768AF00DAC649 /* amsynth */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 016776132D5768AF00DAC649 /* Build configuration list for PBXNativeTarget "amsynth" */;
 			buildPhases = (
-				0167760B2D5768AF00DAC649 /* Headers */,
 				0167760C2D5768AF00DAC649 /* Sources */,
 				0167760D2D5768AF00DAC649 /* Frameworks */,
 			);
@@ -869,7 +844,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 016776212D57694900DAC649 /* Build configuration list for PBXNativeTarget "amsynth_lv2" */;
 			buildPhases = (
-				0167761C2D57694900DAC649 /* Headers */,
 				0167761D2D57694900DAC649 /* Sources */,
 				0167761E2D57694900DAC649 /* Frameworks */,
 				0167863A2D576DCF00DAC649 /* Generate LV2 Manifests */,
@@ -891,7 +865,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 016776282D576AE600DAC649 /* Build configuration list for PBXNativeTarget "amsynth_lv2ui" */;
 			buildPhases = (
-				016776252D576AE600DAC649 /* Headers */,
 				016776262D576AE600DAC649 /* Sources */,
 				016776272D576AE600DAC649 /* Frameworks */,
 			);
@@ -1177,7 +1150,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(HOME)";
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1220,7 +1192,6 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEPLOYMENT_LOCATION = YES;
 				DSTROOT = "$(HOME)";
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -1273,6 +1244,7 @@
 		016776222D57694900DAC649 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "/Library/Audio/Plug-Ins/LV2/amsynth.lv2";
 				OTHER_LDFLAGS = (
@@ -1293,6 +1265,7 @@
 		016776232D57694900DAC649 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "/Library/Audio/Plug-Ins/LV2/amsynth.lv2";
 				OTHER_LDFLAGS = (
@@ -1313,6 +1286,7 @@
 		016776292D576AE600DAC649 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "/Library/Audio/Plug-Ins/LV2/amsynth.lv2";
 				OTHER_LDFLAGS = (
@@ -1333,6 +1307,7 @@
 		0167762A2D576AE600DAC649 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "/Library/Audio/Plug-Ins/LV2/amsynth.lv2";
 				OTHER_LDFLAGS = (
@@ -1353,6 +1328,7 @@
 		016776312D576AF100DAC649 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Audio/Plug-Ins/VST";
 				OTHER_LDFLAGS = (
@@ -1370,6 +1346,7 @@
 		016776322D576AF100DAC649 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Audio/Plug-Ins/VST";
 				OTHER_LDFLAGS = (
@@ -1387,6 +1364,7 @@
 		016786912D577C1C00DAC649 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = auinfo.plist;
@@ -1414,6 +1392,7 @@
 		016786922D577C1C00DAC649 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEPLOYMENT_LOCATION = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = auinfo.plist;
