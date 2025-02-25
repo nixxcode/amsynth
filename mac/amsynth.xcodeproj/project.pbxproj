@@ -939,7 +939,7 @@
 				};
 			};
 			buildConfigurationList = 016776082D57686E00DAC649 /* Build configuration list for PBXProject "amsynth" */;
-			compatibilityVersion = "Xcode 15.0";
+			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1373,10 +1373,6 @@
 					"-Xlinker",
 					"-exported_symbol",
 					"-Xlinker",
-					_AmsynthAUEntry,
-					"-Xlinker",
-					"-exported_symbol",
-					"-Xlinker",
 					_AmsynthAUFactory,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.nickdowell.amsynth.au;
@@ -1398,10 +1394,6 @@
 				INFOPLIST_FILE = auinfo.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Audio/Plug-Ins/Components";
 				OTHER_LDFLAGS = (
-					"-Xlinker",
-					"-exported_symbol",
-					"-Xlinker",
-					_AmsynthAUEntry,
 					"-Xlinker",
 					"-exported_symbol",
 					"-Xlinker",
