@@ -35,7 +35,7 @@ struct ParameterListener final : Parameter::Observer {
 	ParameterListener(AudioUnit audioUnit, PresetController *presetController)
 	: audioUnit_(audioUnit), presetController_(presetController)
 	{
-		AUListenerCreate(ParameterListener::AUParameterChanged, this, CFRunLoopGetMain(), kCFRunLoopCommonModes, 1.f / 60.f, &audioUnitListener_);
+		AUListenerCreate(auParameterListenerProc, this, nullptr, nullptr, 0.f, &audioUnitListener_);
 
 		for (int i = 0; i < kAmsynthParameterCount; i++) {
 			AudioUnitParameter auParameter = {
@@ -50,7 +50,7 @@ struct ParameterListener final : Parameter::Observer {
 			AUListenerAddParameter(audioUnitListener_, &parameter, &auParameter);
 		}
 
-		presetController_->getCurrentPreset().addObserver(this);
+		presetController_->getCurrentPreset().addObserver(this, false);
 	}
 
 	~ParameterListener()
@@ -60,10 +60,8 @@ struct ParameterListener final : Parameter::Observer {
 
 	void parameterDidChange(const Parameter &param) final
 	{
-		if (ignore_) return;
 		const AudioUnitParameter auParameter = {audioUnit_, param.getId(), kAudioUnitScope_Global, 0};
-		AUParameterSet(audioUnitListener_, NULL, &auParameter, param.getValue(), 0);
-		notify(param, kAudioUnitEvent_ParameterValueChange);
+		AUParameterSet(audioUnitListener_, NULL, &auParameter, param.getValue(), 0); // notifies parameter & event listeners
 	}
 
 	void parameterBeginEdit(const Parameter &param) final
@@ -87,23 +85,14 @@ struct ParameterListener final : Parameter::Observer {
 		AUEventListenerNotify(audioUnitListener_, NULL, &auEvent);
 	}
 
-	static void AUParameterChanged(void *inUserData, void *inObject, const AudioUnitParameter *, AudioUnitParameterValue inValue)
+	static void auParameterListenerProc(void *inUserData, void *inObject, const AudioUnitParameter *, AudioUnitParameterValue inValue)
 	{
-		assert(pthread_main_np());
-		reinterpret_cast<ParameterListener *>(inUserData)->auParameterChanged(*reinterpret_cast<Parameter *>(inObject), inValue);
-	}
-
-	void auParameterChanged(Parameter &param, float inValue)
-	{
-		ignore_ = true;
-		param.setValue(inValue);
-		ignore_ = false;
+		reinterpret_cast<Parameter *>(inObject)->setValue(inValue, reinterpret_cast<ParameterListener *>(inUserData));
 	}
 
 	AudioUnit audioUnit_;
 	PresetController *presetController_;
 	AUEventListenerRef audioUnitListener_ {nullptr};
-	bool ignore_ {false};
 };
 
 __attribute__((objc_direct_members))

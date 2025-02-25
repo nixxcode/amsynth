@@ -72,12 +72,12 @@ public:
 	Parameter(Param paramId);
 
 	float			getValue		() const { return _value; }
-	void			setValue		(float value);
+	void			setValue		(float value, Observer *sender = nullptr);
 
 	static float	valueFromString	(const std::string &str);
 
 	float			getNormalisedValue	() const { return (getValue()-getMin())/(getMax()-getMin()); }
-	void			setNormalisedValue	(float val) { setValue (val*(getMax()-getMin())+getMin()); }
+	void			setNormalisedValue	(float val, Observer *sender = nullptr) { setValue (val*(getMax()-getMin())+getMin(), sender); }
 
 	unsigned char	getMidiValue		() const { return (unsigned char) roundf(getNormalisedValue() * 127.f); }
 	void			setMidiValue		(unsigned char value) { setNormalisedValue(value / 127.f); }
@@ -92,7 +92,7 @@ public:
 
 	Param			getId				() const { return _paramId; }
 
-	void			addObserver			(Observer *observer);
+	void			addObserver			(Observer *observer, bool notify = true);
 	void			removeObserver		(Observer *observer) { _observers.erase(observer); }
 
 	void			beginEdit		() const { for (auto it : _observers) it->parameterBeginEdit(*this); }

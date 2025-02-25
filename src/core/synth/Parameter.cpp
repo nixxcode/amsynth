@@ -106,14 +106,15 @@ Parameter::Parameter(Param paramId)
 {}
 
 void
-Parameter::addObserver(Observer *observer)
+Parameter::addObserver(Observer *observer, bool notify)
 {
 	_observers.insert(observer);
-	observer->parameterDidChange(*this);
+	if (notify)
+		observer->parameterDidChange(*this);
 }
 
 void
-Parameter::setValue(float value)
+Parameter::setValue(float value, Observer *sender)
 {
 	if (value == _value) return;
 	
@@ -129,7 +130,9 @@ Parameter::setValue(float value)
 
 	_value = newValue;
 
-	for (auto it : _observers) it->parameterDidChange(*this);
+	for (Observer *it : _observers)
+		if (it != sender)
+			it->parameterDidChange(*this);
 }
 
 float

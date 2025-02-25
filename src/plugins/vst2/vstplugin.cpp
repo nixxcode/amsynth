@@ -54,14 +54,11 @@ struct Plugin final : public Parameter::Observer
 {
 	Plugin(AEffect *effect, audioMasterCallback master)
 	: effect(effect)
-	, audioMasterValues(kAmsynthParameterCount)
 	{
 		audioMaster = master;
 		synthesizer = new Synthesizer;
 		midiBuffer = (unsigned char *)malloc(MIDI_BUFFER_SIZE);
-		for (int i = 0; i < kAmsynthParameterCount; i++)
-			audioMasterValues[i] = synthesizer->_presetController->getCurrentPreset().getParameter(i).getNormalisedValue();
-		synthesizer->_presetController->getCurrentPreset().addObserver(this);
+		synthesizer->_presetController->getCurrentPreset().addObserver(this, false);
 	}
 
 	~Plugin()
@@ -72,10 +69,8 @@ struct Plugin final : public Parameter::Observer
 
 	void parameterDidChange(const Parameter &parameter) override
 	{
-		if (audioMaster &&
-			audioMasterValues.at(parameter.getId()) != parameter.getNormalisedValue())
-			audioMaster(effect, audioMasterAutomate, parameter.getId(), 0, nullptr,
-						audioMasterValues[parameter.getId()] = parameter.getNormalisedValue());
+		if (audioMaster)
+			audioMaster(effect, audioMasterAutomate, parameter.getId(), 0, nullptr, parameter.getNormalisedValue());
 	}
 
 	void parameterBeginEdit(const Parameter &parameter) override
@@ -92,7 +87,6 @@ struct Plugin final : public Parameter::Observer
 
 	AEffect *effect;
 	audioMasterCallback audioMaster;
-	std::vector<float> audioMasterValues;
 	Synthesizer *synthesizer;
 	unsigned char *midiBuffer;
 	std::vector<amsynth_midi_event_t> midiEvents;
@@ -323,13 +317,13 @@ static void processReplacing(AEffect *effect, float **inputs, float **outputs, i
 static void setParameter(AEffect *effect, int i, float f)
 {
 	Plugin *plugin = (Plugin *)effect->ptr3;
-	plugin->synthesizer->setNormalizedParameterValue((Param) i, plugin->audioMasterValues.at(i) = f);
+	plugin->synthesizer->_presetController->getCurrentPreset().getParameter(i).setNormalisedValue(f, plugin);
 }
 
 static float getParameter(AEffect *effect, int i)
 {
 	Plugin *plugin = (Plugin *)effect->ptr3;
-	return plugin->audioMasterValues.at(i) = plugin->synthesizer->getNormalizedParameterValue((Param) i);
+	return plugin->synthesizer->getNormalizedParameterValue((Param)i);
 }
 
 extern "C" {

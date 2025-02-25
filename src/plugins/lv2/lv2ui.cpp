@@ -38,8 +38,7 @@
 struct ParameterListener final : public Parameter::Observer {
 	ParameterListener(PresetController *presetController, std::function<void(int, float)> &&writeFn, std::function<void(int, bool)> &&touchFn)
 	: presetController(presetController), writeFunc(std::move(writeFn)), touchFunc(std::move(touchFn)) {
-		presetController->getCurrentPreset().addObserver(this);
-		active = true;
+		presetController->getCurrentPreset().addObserver(this, false);
 	}
 
 	~ParameterListener() {
@@ -49,7 +48,7 @@ struct ParameterListener final : public Parameter::Observer {
 	}
 
 	void parameterDidChange(const Parameter &parameter) final {
-		if (active) writeFunc(parameter.getId(), parameter.getValue());
+		writeFunc(parameter.getId(), parameter.getValue());
 	}
 
 	void parameterBeginEdit(const Parameter &parameter) final {
@@ -63,7 +62,6 @@ struct ParameterListener final : public Parameter::Observer {
 	PresetController *presetController;
 	std::function<void(int, float)> writeFunc;
 	std::function<void(int, bool)> touchFunc;
-	bool active{false};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -254,9 +252,7 @@ lv2_ui_port_event(LV2UI_Handle handle,
 			}
 		}
 	} else if (port_index >= PORT_FIRST_PARAMETER) {
-		ui->parameterListener->active = false;
-		ui->presetController.getCurrentPreset().getParameter(port_index - PORT_FIRST_PARAMETER).setValue(*(float *)buffer);
-		ui->parameterListener->active = true;
+		ui->presetController.getCurrentPreset().getParameter(port_index - PORT_FIRST_PARAMETER).setValue(*(float *)buffer, ui->parameterListener.get());
 	}
 }
 

@@ -95,9 +95,9 @@ Preset::randomise()
 }
 
 void
-Preset::addObserver(Parameter::Observer *observer)
+Preset::addObserver(Parameter::Observer *observer, bool notify)
 {
-	for (auto &it : mParameters) it.addObserver(observer);
+	for (auto &it : mParameters) it.addObserver(observer, notify);
 }
 
 void

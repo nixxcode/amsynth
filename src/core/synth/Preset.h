@@ -48,7 +48,7 @@ public:
 	
     void			randomise		();
     
-	void			addObserver		(Parameter::Observer *);
+	void			addObserver		(Parameter::Observer *, bool notify = true);
 
     std::string		toString		() { std::stringstream stream; toString(stream); return stream.str(); }
     void			toString		(std::stringstream &);
