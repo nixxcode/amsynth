@@ -33,7 +33,7 @@
 #define kPropertiesKey CFSTR("_properties")
 #define MIDI_BUFFER_SIZE 4096
 
-class AmsynthAU : public MusicDeviceBase
+class AmsynthAU : public MusicDeviceBase, public Parameter::Observer
 {
 public:
 	AmsynthAU(AudioComponentInstance inInstance)
@@ -58,10 +58,14 @@ public:
 		if (GetOutput(0)->GetStreamFormat().mChannelsPerFrame != 2) {
 			return kAudioUnitErr_FormatNotSupported;
 		}
+
 		_synth.setSampleRate(GetOutput(0)->GetStreamFormat().mSampleRate);
+		_synth._presetController->getCurrentPreset().addObserver(this, false);
+
 		_midiBuffer.resize(MIDI_BUFFER_SIZE);
 		_midiBufferPtr = _midiBuffer.data();
 		_midiEvents.reserve(MIDI_BUFFER_SIZE / 3);
+
 		return noErr;
 	}
 
@@ -241,9 +245,16 @@ public:
 						  AudioUnitParameterValue inValue, UInt32 inBufferOffsetInFrames) override
 	{
 		if (inScope == kAudioUnitScope_Global && inID < kAmsynthParameterCount) {
-			_synth.setParameterValue((Param)inID, inValue);
+			_synth._presetController->getCurrentPreset().getParameter(inID).setValue(inValue, this);
 		}
 		return MusicDeviceBase::SetParameter(inID, inScope, inElement, inValue, inBufferOffsetInFrames);
+	}
+
+	void parameterDidChange(const Parameter &param) override
+	{
+		GetElement(kAudioUnitScope_Global, 0)->SetParameter(param.getId(), param.getValue());
+		AudioUnitParameter auParameter {GetComponentInstance(), param.getId(), kAudioUnitScope_Global, 0};
+		AUParameterListenerNotify(nullptr, nullptr, &auParameter);
 	}
 
 	// MARK: AU state
