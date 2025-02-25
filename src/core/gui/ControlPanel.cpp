@@ -67,7 +67,7 @@ private:
 	std::unordered_map<std::string, juce::Image> images_;
 };
 
-struct ControlPanel::Impl final : juce::MouseListener
+struct ControlPanel::Impl final : juce::MouseListener, juce::Timer
 {
 	Impl(ControlPanel *controlPanel, MidiController *midiController, PresetController *presetController)
 	: midiController_(midiController)
@@ -93,6 +93,8 @@ struct ControlPanel::Impl final : juce::MouseListener
 		controlPanel->setSize(background->getWidth(), background->getHeight());
 		components_.push_back(std::move(background));
 
+		Control::isMainThread = true;
+
 		for (int i = 0; i < kAmsynthParameterCount; i++) {
 			auto &parameter = presetController_->getCurrentPreset().getParameter(i);
 
@@ -117,6 +119,8 @@ struct ControlPanel::Impl final : juce::MouseListener
 				components_.push_back(std::move(component));
 			}
 		}
+
+		startTimer(1000 / 30);
 	}
 
 	void mouseDown(const juce::MouseEvent& event) final {
@@ -151,6 +155,15 @@ struct ControlPanel::Impl final : juce::MouseListener
 			config.save();
 		});
 		menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(control));
+	}
+
+	void timerCallback() final {
+		for (auto &it : components_) {
+			auto control = dynamic_cast<Control *>(it.get());
+			if (control) {
+				control->repaintIfNeeded();
+			}
+		}
 	}
 
 	std::vector<std::unique_ptr<juce::Component>> components_;

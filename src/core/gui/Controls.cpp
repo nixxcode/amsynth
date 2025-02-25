@@ -28,6 +28,8 @@
 #include "core/Configuration.h"
 #include "core/synth/Preset.h"
 
+thread_local bool Control::isMainThread;
+
 Control::Control(Parameter &p, juce::Image image, const LayoutDescription::Resource &r)
 : parameter(p)
 , frame_(0)
@@ -69,15 +71,16 @@ void Control::parameterDidChange(const Parameter &) {
 		return;
 	}
 	frame_ = frame;
-	repaintFromAnyThread();
-}
-
-void Control::repaintFromAnyThread() {
-	auto mm = juce::MessageManager::getInstanceWithoutCreating();
-	if (mm && mm->isThisTheMessageThread()) {
+	if (isMainThread) {
 		repaint();
 	} else {
-		juce::MessageManager::callAsync([this] { repaint(); });
+		needsRepaint_ = true;
+	}
+}
+
+void Control::repaintIfNeeded() {
+	if (needsRepaint_.exchange(false)) {
+		repaint();
 	}
 }
 

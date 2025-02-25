@@ -33,7 +33,11 @@ public:
 	Control(Parameter &p, juce::Image image, const LayoutDescription::Resource &r);
 	~Control();
 
+	void repaintIfNeeded();
+
 	Parameter &parameter;
+
+	static thread_local bool isMainThread;
 
 protected:
 	virtual void leftMouseDown(const juce::MouseEvent &event) = 0;
@@ -41,13 +45,13 @@ protected:
 	void mouseDoubleClick(const juce::MouseEvent &event) final;
 	void paint(juce::Graphics &g) override;
 	void parameterDidChange(const Parameter &) override;
-	void repaintFromAnyThread();
 
 private:
 	std::atomic_int frame_;
 	juce::Image image_;
 	int width_, height_;
 	int frames_;
+	std::atomic_bool needsRepaint_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
